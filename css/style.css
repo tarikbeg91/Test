@@ -1,1 +1,493 @@
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; background-color: #f0f4f8;
+            color: #333; display: flex; flex-direction: column; align-items: center;
+        }
+        .app-header {
+            background-color: #34495e; color: white; padding: 10px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; box-sizing: border-box; position: fixed;
+            top: 0; left: 0; z-index: 1001;
+        }
+        .app-header .title { font-size: 1.3em; font-weight: bold; }
+        .header-icons { display: flex; gap: 8px; flex-wrap: nowrap; }
+        .header-icons button, .dropdown-container button {
+            background: none; border: none; color: white; font-size: 1.4em;
+            cursor: pointer; padding: 8px; border-radius: 4px; transition: background-color 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-icons button:hover, .dropdown-container button:hover {
+            background-color: rgba(255,255,255,0.15);
+        }
+        #sharePdfExcelButton small {
+             font-size: 0.6em; margin-left: 4px; display: inline;
+        }
+        @media (max-width: 700px) {
+            #sharePdfExcelButton small { }
+        }
 
+        .container {
+            margin-top: 70px;
+            background-color: #fff; padding: 20px; border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1); width: 95%; max-width: 1000px;
+            margin-bottom: 20px;
+        }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .input-group, .parts-group, .results-group, .projects-group, .fitting-strategy-group, .offcut-settings-group {
+            margin-bottom: 25px; padding: 20px; border: 1px solid #dce4ec;
+            border-radius: 8px; background-color: #fafdff;
+        }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568; }
+        input[type="number"], input[type="text"], select, textarea {
+            width: calc(100% - 22px); padding: 10px; margin-bottom: 15px;
+            border: 1px solid #cbd5e0; border-radius: 5px; box-sizing: border-box; font-size: 1em;
+        }
+        textarea { resize: vertical; }
+        select { width: 100%; }
+        input[type="checkbox"] { margin-right: 5px; vertical-align: middle;}
+        input:focus, select:focus, textarea:focus { border-color: #4299e1; box-shadow: 0 0 0 1px #4299e1; outline: none; }
+        button, .button-like-label {
+            background-color: #3498db; color: white; padding: 10px 18px; border: none;
+            border-radius: 5px; cursor: pointer; font-size: 1em; transition: background-color 0.2s;
+            margin-right: 10px; margin-top: 5px;
+            display: inline-block; text-align: center;
+        }
+        button:hover, .button-like-label:hover { background-color: #2980b9; }
+
+        #showOffcutsLibraryIcon { background-color: #f39c12;} #showOffcutsLibraryIcon:hover { background-color: #e67e22;}
+        .button-like-label { background-color: #f39c12; } .button-like-label:hover { background-color: #e67e22; }
+        #showHistoryButton { background-color: #8e44ad;} #showHistoryButton:hover { background-color: #7d3c98;}
+        #resetButton { background-color: #d35400; } #resetButton:hover { background-color: #b84300; }
+        .delete-btn, .project-delete-btn, .offcut-delete-btn { background-color: #e74c3c; padding: 5px 10px; font-size: 0.9em; }
+        .delete-btn:hover, .project-delete-btn:hover, .offcut-delete-btn:hover { background-color: #c0392b; }
+        .rotate-override-btn {
+            background-color: #f0f0f0; border: 1px solid #ccc; color: #333;
+            padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 0.8em;
+            min-width: 60px;
+        }
+        .rotate-override-btn:hover { background-color: #e0e0e0; }
+        .history-delete-btn {
+            background-color: #e74c3c; color: white; border: none; padding: 4px 8px;
+            font-size: 0.8em; border-radius: 3px; cursor: pointer; margin-left: 10px;
+            flex-shrink: 0;
+        }
+        .history-delete-btn:hover { background-color: #c0392b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+        th { background-color: #edf2f7; font-weight: 600; }
+        .table-summary-row { font-weight: bold; background-color: #f9fafb; }
+        .sheets-container { display: flex; flex-wrap: wrap; gap: 35px; margin-top: 20px; justify-content: center;}
+        .sheet-wrapper {
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 35px;
+        }
+        .sheet-wrapper h3 { margin-top: 0; text-align: center; color: #34495e; font-size: 1.1em; }
+
+        canvas {
+            border: 1px solid #7f8c8d;
+            background-color: white;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .results-summary { font-size: 1.2em; font-weight: bold; text-align: center; margin-bottom: 15px;}
+        
+        /* === MODIFIED CSS FOR fitting-strategy-group === */
+        .fitting-strategy-group .controls-row {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            align-items: center; /* Vertically align items in the row */
+            gap: 15px; /* Space between items in the row */
+            margin-bottom: 15px; /* Space below this row of controls */
+        }
+
+        .fitting-strategy-group .checkbox-area {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0; /* Prevent checkbox area from shrinking too much */
+        }
+        .fitting-strategy-group .checkbox-area input[type="checkbox"] {
+            margin-bottom: 0; /* Remove default bottom margin */
+        }
+        .fitting-strategy-group .checkbox-area label {
+            margin-bottom: 0; /* Remove default bottom margin */
+            font-weight: normal;
+            white-space: nowrap; /* Prevent label text from wrapping */
+        }
+
+        .fitting-strategy-group .strategy-select-area {
+            flex-grow: 1; /* Allow select area to take remaining space */
+            min-width: 200px; /* Minimum width for the select dropdown */
+        }
+        .fitting-strategy-group .strategy-select-area label {
+             display: block; /* Ensure label is above select */
+             margin-bottom: 5px;
+        }
+         .fitting-strategy-group .strategy-select-area select {
+            margin-bottom: 0; /* Remove default bottom margin */
+            width: 100%; /* Make select take full width of its container */
+        }
+        
+        .actions-div {
+            display: flex; 
+            justify-content: space-between; 
+            gap: 10px; 
+            margin-top: 10px; /* Reduced top margin as controls-row has margin-bottom */
+        }
+        .actions-div button {
+            flex-grow: 1; /* Allow buttons to grow and share space */
+            flex-basis: 0; /* Allow flex-grow to distribute space */
+            margin-right: 0; /* Remove individual right margin if gap is used */
+            margin-bottom: 0;
+        }
+        .actions-div button:last-child {
+            margin-right: 0;
+        }
+        /* === END OF MODIFIED CSS FOR fitting-strategy-group === */
+
+
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);
+            align-items: center; justify-content: center;
+        }
+        .modal-content, .sheet-size-modal-content, .unit-modal-content, .project-modal-content, .offcuts-library-modal-content {
+            background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #888;
+            width: 90%; max-width: 500px; border-radius: 8px; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .offcuts-library-modal-content { max-width: 700px; }
+        .sheet-size-modal-content { max-width: 400px; }
+        .unit-modal-content { max-width: 300px; }
+        .project-modal-content { max-width: 600px; }
+        .unit-modal-content label, .sheet-size-modal-content h2, .modal-content h2, .project-modal-content h2, .offcuts-library-modal-content h2 { margin-top: 0;}
+        .unit-modal-content select { width: 100%; padding: 8px; margin-top:5px; margin-bottom:15px; border-radius:4px; border:1px solid #ccc; }
+        .close-button {
+            color: #aaa; position: absolute; top: 10px; right: 15px;
+            font-size: 28px; font-weight: bold;
+        }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
+        #historyList, #projectList, #offcutsListContainer ul, #usefulOffcutsDisplayListContainer ul, #otherSmallWastageContainer ul {
+            list-style-type: none; padding: 0; margin-top: 5px;
+        }
+        #historyList, #projectList {
+             max-height: 300px; overflow-y: auto; border-top: 1px solid #eee; margin-top: 15px;
+        }
+        #usefulOffcutsDisplayListContainer, #otherSmallWastageContainer, #offcutsListContainer {
+            border-top: 1px solid #eee;
+            margin-top: 15px;
+        }
+        #usefulOffcutsDisplayListContainer { border-top: none; margin-top: 0;}
+        #otherSmallWastageContainer { border-top: none; margin-top: 0;}
+
+
+        #historyList li, #projectList li, #offcutsListContainer li, #usefulOffcutsDisplayListContainer li, #otherSmallWastageContainer li {
+            padding: 8px 10px; border-bottom: 1px solid #eee;
+            font-size: 0.9em; display: flex; justify-content: space-between; align-items: center;
+        }
+         #offcutsListContainer table td, #offcutsListContainer table th {
+            padding: 6px 8px;
+            font-size: 0.85em;
+        }
+
+        #usefulOffcutsDisplayListContainer li, #otherSmallWastageContainer li {
+            background-color: #fef6f6; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 5px;
+        }
+        #usefulOffcutsDisplayListContainer li { background-color: #f0fdf0; border-color: #ddeedd; }
+
+
+        #historyList li .history-item-content, #projectList li .project-item-content, #offcutsListContainer li span:first-child {
+            flex-grow: 1; cursor: default;
+        }
+        #historyList li .history-item-content:hover, #projectList li .project-item-content:hover { background-color: #f0f0f0; }
+        #historyList li small, #projectList li small { color: #777; margin-left: 10px;}
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%; /* Position below the button */
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1002; /* Ensure it's above other content */
+            border-radius: 4px;
+            min-width: 200px;
+            padding: 5px 0;
+        }
+        .dropdown-container { /* Added for proper dropdown positioning */
+            position: relative;
+        }
+        .dropdown-menu a, .dropdown-menu label.dropdown-menu-item {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.95em;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .dropdown-menu a:hover, .dropdown-menu label.dropdown-menu-item:hover {
+            background-color: #f0f0f0;
+        }
+        /* Adjust specific menu positions if needed, but general positioning is handled by .dropdown-menu */
+        /* #jsonMenu { right: 5px; top: 50px; } */
+
+
+        .cutting-list { margin-top: 10px; font-size: 0.9em; }
+        .cutting-list ul { list-style-type: none; padding-left: 0; }
+        .cutting-list li { margin-bottom: 5px; display: flex; align-items: center; }
+        .cutting-list li input[type="checkbox"] { margin-right: 8px; }
+        .cutting-list li label { font-weight: normal; margin-bottom: 0;}
+        .cutting-list li span { flex-grow: 1; }
+        .cutting-list-summary { font-weight: bold; margin-top: 8px; }
+
+        .wastage-section { margin-top: 30px; padding-top: 20px; border-top: 2px dashed #bdc3c7;}
+        .wastage-section h3 { text-align: center; color: #c0392b; }
+        #wastageOverallStats { list-style-type: none; padding-left: 0; margin-top:0; margin-bottom: 10px;}
+        #wastageOverallStats li { margin-bottom: 5px; }
+        .wastage-list .free-rect-dim { font-weight: bold; color: #721c24; }
+        .wastage-list-summary { font-weight: bold; margin-top: 10px; text-align: left; }
+        .useful-offcuts-summary { font-weight: bold; text-align: left; padding: 5px 0; margin-top: 5px; margin-bottom: 5px; display:flex; align-items:center; justify-content:space-between;}
+        #offcutsLibraryTotalSummary {
+            text-align: right; font-weight: bold; margin-top: 10px;
+            padding-top: 10px; border-top: 1px solid #eee;
+        }
+        #usefulOffcutsListTotalSummary {
+            text-align: left; font-weight: bold; margin-top: 8px;
+        }
+        .project-details-inputs {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px dashed #e0e0e0;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+        }
+        .project-details-inputs label {
+            font-weight: 500;
+        }
+
+        .edge-banding-controls .edge-tape-btn {
+            padding: 8px 10px;
+            font-size: 0.85em;
+            min-width: 38px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            border-radius: 4px;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .edge-banding-controls .edge-tape-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .edge-banding-controls .edge-tape-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        .edge-banding-controls .edge-tape-btn.all {
+            padding: 8px;
+            font-size: 1.1em;
+            flex-grow: 0;
+        }
+        #selectedEdgesDisplay {
+             font-size: 0.85em; margin-top: 8px; color: #4a5568;
+             padding: 5px; border: 1px dashed #eee; border-radius: 3px;
+             min-height: 1.2em;
+        }
+
+
+        #loadingIndicator {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+        #loadingIndicator div {
+            background-color: white; padding: 20px 30px; border-radius: 5px;
+            font-size: 1.2em; color: #333; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 700px) {
+            .app-header .title { font-size: 1.1em; }
+            .header-icons { gap: 1px; flex-wrap: nowrap; }
+            .header-icons button, .dropdown-container button { font-size: 1.1em; padding: 5px; }
+            .header-icons button small, #sharePdfExcelButton small { display: none; }
+            
+            /* Responsive adjustments for fitting strategy and actions */
+            .fitting-strategy-group .controls-row {
+                flex-direction: column; /* Stack checkbox and select on smaller screens */
+                align-items: stretch; /* Make items take full width */
+                gap: 10px;
+            }
+            .fitting-strategy-group .checkbox-area {
+                 justify-content: flex-start; /* Align checkbox to the start */
+                 margin-bottom: 5px; /* Add some space if select is below */
+            }
+            .fitting-strategy-group .strategy-select-area {
+                min-width: 100%; /* Ensure select takes full width when stacked */
+            }
+             .fitting-strategy-group .strategy-select-area select {
+                 margin-bottom: 10px; /* Space before buttons if select is last in this column */
+            }
+
+            .actions-div {
+                flex-wrap: wrap; /* Allow buttons to wrap if needed */
+            }
+            .actions-div button {
+                flex-basis: calc(50% - 5px); /* Try to fit two buttons per row */
+                margin-bottom: 10px;
+            }
+            .actions-div button:last-child {
+                 margin-bottom: 0; /* If it's the last button on its own row */
+            }
+             /* If only one button wraps to a new line, make it full width */
+            .actions-div button:nth-child(odd):last-child {
+                flex-basis: 100%;
+            }
+
+        }
+        @media (max-width: 480px) {
+            .app-header { padding: 8px 10px; }
+            .app-header .title { font-size: 1.0em; }
+            .header-icons button, .dropdown-container button { font-size: 1.0em; padding: 4px; }
+            
+            .actions-div button {
+                flex-basis: 100%; /* Stack buttons fully on very small screens */
+            }
+            .fitting-strategy-group .checkbox-area {
+                margin-bottom: 10px;
+            }
+        }
+
+
+        @media print {
+            body {
+                margin: 15mm; padding: 0; font-size: 10pt;
+                color: #000 !important; background-color: #fff !important;
+            }
+            html, body { height: auto; overflow: visible; }
+            .app-header, .parts-group, #mainActionButtons, .modal, #jsonMenu, .dropdown-menu, .no-print,
+            #manageProjectsIcon, #unitSettingsIcon, #langToggle,
+            #sheetSettingsIcon, #historyIcon, #jsonIcon, #loadingIndicator, #showOffcutsLibraryIcon,
+            .fitting-strategy-group, .offcut-settings-group, /* Hide entire fitting strategy group in print */
+            .rotate-override-btn, 
+            .delete-btn 
+             {
+                display: none !important;
+            }
+            .container {
+                margin-top: 0 !important; box-shadow: none !important; border: none !important;
+                width: 100% !important; max-width: 100% !important; padding: 0 !important;
+            }
+            .input-group#addedPiecesSection, .results-group {
+                display: block !important; border: none !important; padding: 0 !important;
+                margin-bottom: 15px !important; background-color: #fff !important;
+            }
+            .project-details-inputs {
+                display: block !important;
+                border: 1px solid #ccc !important;
+                padding: 10px !important;
+                margin-bottom: 10px !important;
+                background-color: #fff !important;
+            }
+            .project-details-inputs input[type="text"],
+            .project-details-inputs textarea {
+                border: none !important;
+                padding: 0 !important;
+                width: auto !important;
+                background-color: transparent !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .project-details-inputs textarea {
+                resize: none !important;
+                min-height: auto !important;
+                white-space: pre-wrap;
+            }
+            hr.printable-section { display: block !important; border-top: 1px solid #ccc !important; margin: 10px 0 !important;}
+
+
+            .input-group#addedPiecesSection h2, .results-group h2, .wastage-section h3 {
+                text-align: left !important; margin-top: 10px; margin-bottom: 8px !important;
+                font-size: 14pt !important; page-break-after: avoid !important; color: #000 !important;
+            }
+             .results-summary {
+                text-align: left !important; margin-bottom: 10px !important;
+                page-break-after: avoid !important; color: #000 !important;
+            }
+            table {
+                page-break-inside: auto !important; width: 100% !important;
+                margin-top: 5px !important; border: 1px solid #ccc !important;
+            }
+            th, td {
+                border: 1px solid #ccc !important; padding: 4px !important;
+                font-size: 9pt !important; color: #000 !important;
+            }
+            th { background-color: #f0f0f0 !important; }
+            .table-summary-row { background-color: #f8f8f8 !important; }
+            
+            #addedPiecesSection th:nth-child(5), #addedPiecesSection td:nth-child(5) { display: table-cell !important;}
+            #addedPiecesSection th:nth-child(6), #addedPiecesSection td:nth-child(6) { display: none !important;}
+            #addedPiecesSection th:nth-child(7), #addedPiecesSection td:nth-child(7) { display: none !important;}
+
+
+            .sheets-container { display: block !important; margin-top: 10px !important; gap: 0 !important; }
+            .sheet-wrapper {
+                page-break-inside: avoid !important; border: 1px solid #ccc !important;
+                margin-bottom: 20px !important; width: 100% !important;
+                box-sizing: border-box !important; padding: 5px !important;
+                background-color: #fff !important;
+            }
+            .sheet-wrapper h3 { font-size: 12pt !important; margin-bottom: 5px !important; color: #000 !important; }
+            .sheet-wrapper canvas {
+                max-width: 100% !important;
+                height: auto !important;
+                border: 1px solid #aaa !important;
+                display: block !important;
+            }
+            .cutting-list { font-size: 9pt !important; margin-top: 10px !important; }
+            .cutting-list ul { padding-left: 5px !important; }
+            .cutting-list li label { color: #000 !important; }
+            .cutting-list input[type="checkbox"] {
+                appearance: none; -webkit-appearance: none; -moz-appearance: none;
+                border: 1px solid #555 !important; width: 10px; height: 10px;
+                margin-right: 5px; vertical-align: middle; background-color: #fff;
+                position: relative;
+            }
+            .cutting-list input[type="checkbox"]:checked::before {
+                content: "✓"; display: block; color: #000 !important; position: absolute;
+                left: 1px; top: -2px; font-size: 10pt; line-height: 1;
+            }
+            .wastage-section {
+                page-break-before: always !important; margin-top: 20px !important;
+                background-color: #fff !important;
+            }
+            #usefulOffcutsDisplayListContainer ul, #otherSmallWastageContainer ul, #offcutsListContainer ul {
+                 padding-left: 0 !important; max-height: none !important; overflow: visible !important;
+            }
+            #usefulOffcutsDisplayListContainer li, #otherSmallWastageContainer li, #offcutsListContainer li {
+                font-size: 9pt !important; padding: 4px !important;
+                border: 1px solid #edd !important;
+                color: #000 !important; margin-bottom: 4px !important; border-radius: 3px !important;
+            }
+            #usefulOffcutsDisplayListContainer li { background-color: #f0fdf0 !important; border-color: #ddeedd !important;}
+            #otherSmallWastageContainer li { background-color: #fef6f6 !important; border-color: #f5c6cb !important;}
+            #offcutsListContainer li { background-color: #f8f9fa !important; border-color: #dee2e6 !important;}
+
+
+            .wastage-list .free-rect-dim, #usefulOffcutsDisplayListContainer .free-rect-dim, #otherSmallWastageContainer .free-rect-dim { color: #500 !important; }
+            .wastage-list-summary, .useful-offcuts-summary, #offcutsLibraryTotalSummary, #usefulOffcutsListTotalSummary {
+                 font-size: 10pt !important; color: #000 !important;
+            }
+            .useful-offcuts-summary button { display: none !important; }
+          }
