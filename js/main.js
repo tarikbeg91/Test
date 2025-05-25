@@ -2,6 +2,37 @@
 
 // config.js से इम्पोर्ट्स
 import {
+    // main.js की शुरुआत में (परीक्षण के लिए)
+(function() {
+    const logOutput = document.getElementById('mobileLogOutput');
+    if (!logOutput) return; // यदि div मौजूद नहीं है
+
+    const oldLog = console.log;
+    console.log = function(...messages) {
+        oldLog.apply(console, messages); // मूल कंसोल पर भी लॉग करें
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = messages.map(m => {
+            try {
+                return typeof m === 'object' ? JSON.stringify(m) : String(m);
+            } catch (e) {
+                return '[Unstringifiable Object]';
+            }
+        }).join(' ');
+        logOutput.appendChild(messageDiv);
+        logOutput.scrollTop = logOutput.scrollHeight; // सबसे नीचे स्क्रॉल करें
+    };
+
+    const oldError = console.error;
+    console.error = function(...messages) {
+        oldError.apply(console, messages);
+        const messageDiv = document.createElement('div');
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = "ERROR: " + messages.map(m => typeof m === 'object' ? JSON.stringify(m) : String(m)).join(' ');
+        logOutput.appendChild(messageDiv);
+        logOutput.scrollTop = logOutput.scrollHeight;
+    };
+    // इसी तरह console.warn, console.info आदि के लिए भी कर सकते हैं
+})();
     STORAGE_KEY_PIECES,
     STORAGE_KEY_SETTINGS,
     STORAGE_KEY_ID_COUNTER,
