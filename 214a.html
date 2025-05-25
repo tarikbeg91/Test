@@ -1,115 +1,300 @@
 <!DOCTYPE html>
-<html lang="hi"> <!-- या जो भी आपकी डिफ़ॉल्ट भाषा है -->
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-lang-key="appTitle">विज़ुअल शीट लेआउट कैलकुलेटर</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* 
-           =============================================================
-           यहाँ आपकी 214.html फ़ाइल का पूरा CSS कोड आएगा
-           (body, .app-header, .container, .input-group, button, table, 
-            .sheet-wrapper, canvas, .modal, आदि सभी स्टाइल)
-           =============================================================
-        */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; background-color: #f0f4f8;
-            color: #333; display: flex; flex-direction: column; align-items: center;
-        }
-        .app-header {
-            background-color: #34495e; color: white; padding: 10px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            width: 100%; box-sizing: border-box; position: fixed;
-            top: 0; left: 0; z-index: 1001;
-        }
-        /* ... (और बाकी सभी CSS स्टाइल नियम यहाँ) ... */
-        /* ... सुनिश्चित करें कि आपने सभी स्टाइल शामिल किए हैं, जिसमें @media क्वेरीज़ और @media print भी शामिल हैं ... */
-
-        /* उदाहरण के तौर पर कुछ स्टाइल */
-        .container {
-            margin-top: 70px;
-            background-color: #fff; padding: 20px; border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1); width: 95%; max-width: 1000px;
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #3498db; color: white; padding: 10px 18px; border: none;
-            border-radius: 5px; cursor: pointer; font-size: 1em; transition: background-color 0.2s;
-            margin-right: 10px; margin-top: 5px;
-            display: inline-block; text-align: center;
-        }
-         /* 
-           =============================================================
-           सभी CSS नियमों को यहाँ शामिल करना सुनिश्चित करें
-           =============================================================
-        */
+        /* =========================================== */
+        /* CSS कोड यहाँ आएगा (अगले चरण में) */
+        /* =========================================== */
     </style>
 </head>
 <body>
-    <!-- 
-        =============================================================
-        यहाँ आपकी 214.html फ़ाइल की पूरी HTML बॉडी सामग्री आएगी
-        (loadingIndicator, app-header, container, parts-group, 
-         addedPiecesSection, fitting-strategy-group, results-group, 
-         सभी modals, आदि)
-        =============================================================
-    -->
     <div id="loadingIndicator">
         <div data-lang-key="loadingPdf">PDF बन रहा है, कृपया प्रतीक्षा करें...</div>
     </div>
-
     <header class="app-header">
-        <!-- ... (पूरा हेडर HTML) ... -->
+        <div class="title" data-lang-key="headerTitle">शीट लेआउट</div>
+        <div class="header-icons">
+            <button id="manageProjectsIcon" title="प्रोजेक्ट मैनेज करें / Manage Projects" onclick="showProjectManagementModal()">🗂️</button>
+            <button id="showOffcutsLibraryIcon" title="ऑफकट लाइब्रेरी / Offcut Library" onclick="showOffcutsLibraryModal()">🧩</button>
+            <button id="unitSettingsIcon" title="यूनिट बदलें / Change Unit" onclick="showUnitSettingsModal()">📏</button>
+            <button id="langToggle" title="भाषा बदलें / Change Language" onclick="toggleLanguage()">🌐</button>
+            <div class="dropdown-container no-print">
+                <button id="sharePdfExcelButton" title="शेयर करें / Share" onclick="toggleDropdownMenu(event, 'sharePdfExcelMenu')">
+                    📤 <small data-lang-key="shareBtn">शेयर</small>
+                </button>
+                <div id="sharePdfExcelMenu" class="dropdown-menu">
+                    <a href="#" onclick="prepareAndPrint(); closeAllDropdowns();" data-lang-key="printPdfBtnMenu">PDF के रूप में प्रिंट करें</a>
+                </div>
+            </div>
+            <button id="sheetSettingsIcon" title="शीट सेटिंग्स" onclick="showSheetSettingsModal()">⚙️</button>
+            <button id="historyIcon" title="हिस्ट्री" onclick="showHistoryModal()">📜</button>
+            <div class="dropdown-container no-print">
+                <button id="jsonIcon" title="JSON ऑपरेशन्स" onclick="toggleDropdownMenu(event, 'jsonMenu')">💾</button>
+                <div id="jsonMenu" class="dropdown-menu">
+                    <a href="#" onclick="exportDataAsJson(); closeAllDropdowns();" data-lang-key="exportJson">JSON एक्सपोर्ट करें</a>
+                    <label for="importJsonInputHidden" class="dropdown-menu-item" data-lang-key="importJson">JSON इम्पोर्ट करें</label>
+                    <input type="file" id="importJsonInputHidden" accept=".json" style="display: none;" onchange="importDataFromJson(event); closeAllDropdowns();">
+                    <a href="#" onclick="exportPiecesToCsv(); closeAllDropdowns();" data-lang-key="exportPiecesCsv">पीस लिस्ट CSV एक्सपोर्ट</a>
+                    <a href="#" onclick="exportLayoutToCsv(); closeAllDropdowns();" data-lang-key="exportLayoutCsv">लेआउट CSV एक्सपोर्ट</a>
+                    <a href="#" onclick="clearSavedData(); closeAllDropdowns();" data-lang-key="clearSavedData">सेव डेटा क्लियर करें</a>
+                </div>
+            </div>
+        </div>
     </header>
 
     <div class="container">
         <div class="parts-group">
-            <!-- ... (पूरा पार्ट्स ग्रुप HTML) ... -->
+            <h2 data-lang-key="addPieceTitle">पीस जोड़ें</h2>
+            <div>
+                <input type="text" id="partName" data-lang-placeholder-key="pieceNameLabel" style="margin-bottom: 10px; width: 100%;">
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <div style="flex: 1 1 100px; min-width: 80px;">
+                    <input type="number" id="partWidth" step="any"
+                           data-lang-placeholder-key="pieceWidthLabel"
+                           style="margin-bottom: 0; width: 100%;">
+                </div>
+                <div style="flex: 1 1 100px; min-width: 80px;">
+                    <input type="number" id="partLength" step="any"
+                           data-lang-placeholder-key="pieceLengthLabel"
+                           style="margin-bottom: 0; width: 100%;">
+                </div>
+                 <div style="flex: 1 1 80px; min-width: 60px;">
+                    <input type="number" id="partQuantity" min="1" data-lang-placeholder-key="pieceQuantityLabel" style="margin-bottom: 0; width: 100%;">
+                </div>
+            </div>
+            <div class="edge-banding-controls">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 5px; margin-bottom: 5px;">
+                    <button id="btnEdgeL1" class="edge-tape-btn" onclick="toggleEdgeTape('L1', this)" data-edge="L1" data-lang-key="edgeTapeL1Btn">L1</button>
+                    <button id="btnEdgeL2" class="edge-tape-btn" onclick="toggleEdgeTape('L2', this)" data-edge="L2" data-lang-key="edgeTapeL2Btn">L2</button>
+                    <button id="btnEdgeW1" class="edge-tape-btn" onclick="toggleEdgeTape('W1', this)" data-edge="W1" data-lang-key="edgeTapeW1Btn">W1</button>
+                    <button id="btnEdgeW2" class="edge-tape-btn" onclick="toggleEdgeTape('W2', this)" data-edge="W2" data-lang-key="edgeTapeW2Btn">W2</button>
+                    <button id="btnEdgeAll" class="edge-tape-btn all" onclick="toggleEdgeTape('All', this)" data-lang-title="toggleAllEdgesTooltip" title="सभी किनारों पर टेप लगाएं/हटाएं">🔄</button>
+                </div>
+                <div id="selectedEdgesDisplay">
+                    <span data-lang-key="selectedEdgesPrefix">चयनित:</span> <span id="currentSelectedEdgesText" data-lang-key="noneLabel">कोई नहीं</span>
+                </div>
+            </div>
+            <button onclick="addPiece()" data-lang-key="addPieceBtn" style="margin-top:20px; width:100%;">पीस जोड़ें</button>
         </div>
 
         <div class="input-group" id="addedPiecesSection">
-            <!-- ... (पूरा एडेड पीस सेक्शन HTML) ... -->
+            <h2 data-lang-key="addedPiecesTitle">जोड़े गए पीस</h2>
+            <div class="project-details-inputs printable-section">
+                <label for="projectLocation" data-lang-key="projectLocationLabel">प्रोजेक्ट लोकेशन/क्लाइंट:</label>
+                <input type="text" id="projectLocation" data-lang-placeholder="projectLocationPlaceholder">
+                <label for="projectNotes" data-lang-key="projectNotesLabel">प्रोजेक्ट नोट्स:</label>
+                <textarea id="projectNotes" rows="3" data-lang-placeholder="projectNotesPlaceholder"></textarea>
+            </div>
+            <hr class="printable-section" style="margin-bottom: 20px;">
+            <table id="piecesTable">
+                <thead>
+                    <tr>
+                        <th data-lang-key="tableName">नाम</th>
+                        <th><span data-lang-key="tableWidth">चौड़ाई</span> (<span class="unit-display">cm</span>)</th>
+                        <th><span data-lang-key="tableLength">लंबाई</span> (<span class="unit-display">cm</span>)</th>
+                        <th data-lang-key="tableQuantity">संख्या</th>
+                        <th data-lang-key="tableEdges">एज टेप</th>
+                        <th data-lang-key="tableAllowRotationOnGrained" class="no-print">ग्रेन पर घुमाएँ?</th>
+                        <th class="no-print" data-lang-key="tableRemove">हटाएं</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr id="piecesTableSummaryRow" class="table-summary-row" style="display: none;">
+                        <td colspan="3" data-lang-key="totalPiecesInList">कुल पीस लिस्ट में:</td>
+                        <td id="totalPiecesInListCount">0</td>
+                        <td></td>
+                        <td class="no-print"></td>
+                        <td class="no-print"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div id="totalEdgeBandingReport" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; display:none;">
+                <h4 data-lang-key="totalEdgeBandingTitle">कुल एज टेप आवश्यक:</h4>
+                <p id="totalEdgeBandingLengthDisplay"></p>
+            </div>
         </div>
 
         <div class="fitting-strategy-group">
-             <!-- ... (पूरा फिटिंग स्ट्रेटेजी ग्रुप HTML, जिसमें BFDH/BFDW विकल्प शामिल हों) ... -->
-            <select id="fittingStrategySelector">
-                <option value="defaultScore" data-lang-key="strategyDefaultScore">डिफ़ॉल्ट स्कोर आधारित (बड़े पीस पहले)</option>
-                <option value="minWastageArea" data-lang-key="strategyMinWastage">न्यूनतम व्यर्थ क्षेत्र</option>
-                <option value="firstFit" data-lang-key="strategyFirstFit">फर्स्ट फिट (सबसे तेज़)</option>
-                <option value="worstFit" data-lang-key="strategyWorstFit">वर्स्ट फिट (अधिक व्यर्थ क्षेत्र)</option>
-                <option value="bottomLeftFreeRect" data-lang-key="strategyBottomLeftFree">खाली आयत (बॉटम-लेफ्ट प्राथमिकता)</option>
-                <option value="sortPiecesByPerimeterDesc" data-lang-key="strategySortPiecePerimeterDesc">पीस: परिधि (बड़े पहले)</option>
-                <option value="sortPiecesByLongestSideDesc" data-lang-key="strategySortPieceLongestSideDesc">पीस: सबसे लंबी भुजा पहले</option>
-                <option value="sortPiecesByShortestSideAsc" data-lang-key="strategySortPieceShortestSideAsc">पीस: सबसे छोटी भुजा पहले</option>
-                <option value="sortPiecesByWidthDesc" data-lang-key="strategySortPieceWidthDesc">पीस: चौड़ाई (बड़े पहले)</option>
-                <option value="sortPiecesByHeightDesc" data-lang-key="strategySortPieceHeightDesc">पीस: ऊंचाई/लंबाई (बड़े पहले)</option>
-                <option value="sortPiecesByAreaAsc" data-lang-key="strategySortPieceAreaAsc">पीस: क्षेत्रफल (छोटे पहले)</option>
-                <option value="bfdh" data-lang-key="strategyBFDH">BFDH (ऊंचाई पहले, शेल्फ क्षैतिज)</option>
-                <option value="bfdw" data-lang-key="strategyBFDW">BFDW (चौड़ाई पहले, शेल्फ ऊर्ध्वाधर)</option>
-            </select>
-            <!-- ... (बाकी फिटिंग स्ट्रेटेजी ग्रुप HTML) ... -->
+            <div class="controls-row">
+                <div class="checkbox-area">
+                    <input type="checkbox" id="useOffcutsCheckbox">
+                    <label for="useOffcutsCheckbox" data-lang-key="useSavedOffcutsLabel">सहेजे गए ऑफकट्स का उपयोग करें</label>
+                </div>
+                <div class="strategy-select-area">
+                    <label for="fittingStrategySelector" data-lang-key="fittingStrategyLabel">फिटिंग रणनीति चुनें:</label>
+                    <select id="fittingStrategySelector">
+                        <option value="defaultScore" data-lang-key="strategyDefaultScore">डिफ़ॉल्ट स्कोर आधारित (बड़े पीस पहले)</option>
+                        <option value="minWastageArea" data-lang-key="strategyMinWastage">न्यूनतम व्यर्थ क्षेत्र</option>
+                        <option value="firstFit" data-lang-key="strategyFirstFit">फर्स्ट फिट (सबसे तेज़)</option>
+                        <option value="worstFit" data-lang-key="strategyWorstFit">वर्स्ट फिट (अधिक व्यर्थ क्षेत्र)</option>
+                        <option value="bottomLeftFreeRect" data-lang-key="strategyBottomLeftFree">खाली आयत (बॉटम-लेफ्ट प्राथमिकता)</option>
+                        <option value="sortPiecesByPerimeterDesc" data-lang-key="strategySortPiecePerimeterDesc">पीस: परिधि (बड़े पहले)</option>
+                        <option value="sortPiecesByLongestSideDesc" data-lang-key="strategySortPieceLongestSideDesc">पीस: सबसे लंबी भुजा पहले</option>
+                        <option value="sortPiecesByShortestSideAsc" data-lang-key="strategySortPieceShortestSideAsc">पीस: सबसे छोटी भुजा पहले</option>
+                        <option value="sortPiecesByWidthDesc" data-lang-key="strategySortPieceWidthDesc">पीस: चौड़ाई (बड़े पहले)</option>
+                        <option value="sortPiecesByHeightDesc" data-lang-key="strategySortPieceHeightDesc">पीस: ऊंचाई/लंबाई (बड़े पहले)</option>
+                        <option value="sortPiecesByAreaAsc" data-lang-key="strategySortPieceAreaAsc">पीस: क्षेत्रफल (छोटे पहले)</option>
+                        <option value="bfdh" data-lang-key="strategyBFDH">BFDH (ऊंचाई पहले, शेल्फ क्षैतिज)</option>
+                        <option value="bfdw" data-lang-key="strategyBFDW">BFDW (चौड़ाई पहले, शेल्फ ऊर्ध्वाधर)</option>
+                    </select>
+                </div>
+            </div>
+             <div class="actions-div" id="mainActionButtons">
+                <button id="resetButton" onclick="resetAll()" data-lang-key="resetCurrentBtn">रीसेट (वर्तमान)</button>
+                <button onclick="calculateAndDrawLayout()" data-lang-key="calculateLayoutBtnUnified">लेआउट की गणना करें</button>
+            </div>
         </div>
 
         <div class="results-group">
-            <!-- ... (पूरा रिजल्ट्स ग्रुप HTML) ... -->
+            <h2 data-lang-key="resultsTitle">परिणाम</h2>
+            <div class="results-summary" id="resultsSummary" data-lang-key="totalSheetsDefault">कुल आवश्यक शीट्स: 0</div>
+            <div class="sheets-container" id="sheetsContainer">
+            </div>
+            <div class="wastage-section" id="wastageSection" style="display:none;">
+                 <h3 data-lang-key="wastageReportTitle">वेस्टेज रिपोर्ट</h3>
+                 <ul id="wastageOverallStats" style="list-style-type: none; padding-left: 0; margin-top:0;"></ul>
+                 <hr style="margin: 10px 0; border-color: #eee;">
+                 <div class="useful-offcuts-summary" id="usefulOffcutsSummary" style="display:none; margin-bottom: 5px;"></div>
+                 <div class="wastage-list" id="usefulOffcutsDisplayListContainer" style="border: 1px solid #eee; padding:5px; margin-bottom:10px;">
+                 </div>
+                 <div id="usefulOffcutsListTotalSummary"></div>
+                 <div id="otherSmallWastageContainer">
+                 </div>
+                 <div class="wastage-list-summary" id="totalWastagePiecesSummary" style="display:none; margin-top:10px;"></div>
+            </div>
         </div>
     </div>
 
-    <!-- सभी Modals (unitSettingsModal, sheetSettingsModal, historyModal, etc.) -->
     <div id="unitSettingsModal" class="modal">
-        <!-- ... (पूरा यूनिट सेटिंग्स मोडल HTML) ... -->
+        <div class="unit-modal-content">
+            <span class="close-button" onclick="closeUnitSettingsModal()">×</span>
+            <h2 data-lang-key="unitSettingsTitle">यूनिट सेटिंग्स</h2>
+            <label for="currentUnitSelector" data-lang-key="selectUnitLabel">वर्तमान यूनिट चुनें:</label>
+            <select id="currentUnitSelector">
+                <option value="cm">सेंटीमीटर (cm)</option>
+                <option value="mm">मिलीमीटर (mm)</option>
+                <option value="m">मीटर (m)</option>
+                <option value="ft">फुट (ft)</option>
+                <option value="in">इंच (in)</option>
+            </select>
+            <button onclick="applyUnitChange()" style="width:100%;" data-lang-key="applyBtn">लागू करें</button>
+        </div>
     </div>
-    <!-- ... (अन्य सभी मोडल यहाँ) ... -->
 
-    <!-- 
-        =============================================================
-        यह वह जगह है जहाँ स्क्रिप्ट टैग बदला गया है
-        =============================================================
-    -->
+    <div id="sheetSettingsModal" class="modal">
+        <div class="sheet-size-modal-content">
+            <span class="close-button" onclick="closeSheetSettingsModal()">×</span>
+            <h2 data-lang-key="sheetSettingsTitle">शीट सेटिंग्स</h2>
+            <label for="modalSheetName" data-lang-key="sheetNameLabel">शीट का नाम (वैकल्पिक):</label>
+            <input type="text" id="modalSheetName" data-lang-placeholder="sheetNamePlaceholder" style="margin-bottom: 10px;">
+            <label for="modalSheetWidth"><span data-lang-key="sheetWidthLabel">शीट की चौड़ाई</span> (<span class="unit-display">cm</span>):</label>
+            <input type="number" id="modalSheetWidth" value="122" step="any" style="margin-bottom: 10px;">
+            <label for="modalSheetLength"><span data-lang-key="sheetLengthGrainLabel">शीट की लंबाई (ग्रेन)</span> (<span class="unit-display">cm</span>):</label>
+            <input type="number" id="modalSheetLength" value="244" step="any" style="margin-bottom: 10px;">
+            <div style="margin-bottom: 10px;">
+                <label for="modalSheetCost" data-lang-key="sheetCostLabel">प्रति शीट लागत:</label>
+                <input type="number" id="modalSheetCost" step="any" data-lang-placeholder="sheetCostPlaceholder">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label for="modalKerfWidth" data-lang-key="kerfWidthLabel">केरफ़/ब्लेड की मोटाई (<span class="unit-display">cm</span>):</label>
+                <input type="number" id="modalKerfWidth" step="any" value="0.3" data-lang-placeholder="kerfWidthPlaceholder">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="checkbox" id="modalHasGrainDirection" checked>
+                <label for="modalHasGrainDirection" style="display: inline-block; margin-bottom: 0; font-weight:normal;" data-lang-key="respectGrainLabel">ग्रेन की दिशा का ध्यान रखें</label>
+            </div>
+            <div style="margin-top:10px;">
+                <label for="modalGrainColor" data-lang-key="grainColorLabel">ग्रेन का रंग:</label>
+                <select id="modalGrainColor">
+                    <option value="rgba(0,0,0,0.08)" data-lang-key="grainGray">हल्का ग्रे</option>
+                    <option value="rgba(160,82,45,0.1)" data-lang-key="grainLightBrown">हल्का भूरा</option>
+                    <option value="rgba(139,69,19,0.1)" data-lang-key="grainDarkBrown">गहरा भूरा</option>
+                    <option value="rgba(210,180,140,0.1)" data-lang-key="grainTan">टैन</option>
+                    <option value="none" data-lang-key="grainNone">कोई ग्रेन नहीं</option>
+                </select>
+            </div>
+            <div style="margin-top:10px;">
+                <label for="modalGrainPattern" data-lang-key="grainPatternLabel">ग्रेन पैटर्न:</label>
+                <select id="modalGrainPattern">
+                    <option value="fine" data-lang-key="grainFine">महीन</option>
+                    <option value="medium" data-lang-key="grainMedium">मध्यम</option>
+                    <option value="coarse" data-lang-key="grainCoarse">बड़ा/मोटा</option>
+                </select>
+            </div>
+            <div class="offcut-settings-group" style="margin-top:10px; padding: 10px 0 0 0; border:none; background:none;">
+                <h4 data-lang-key="offcutSettingsTitle" style="margin-bottom:5px; font-size:1em;">ऑफकट सेटिंग्स</h4>
+                <label for="minOffcutWidth" data-lang-key="minOffcutWidthLabel">न्यूनतम ऑफकट चौड़ाई (<span class="unit-display">cm</span>):</label>
+                <input type="number" id="minOffcutWidth" value="10" step="any">
+                <label for="minOffcutLength" data-lang-key="minOffcutLengthLabel">न्यूनतम ऑफकट लंबाई (<span class="unit-display">cm</span>):</label>
+                <input type="number" id="minOffcutLength" value="45" step="any">
+            </div>
+            <button onclick="applySheetSettings()" style="margin-top: 10px; width:100%;" data-lang-key="applyAndSaveBtn">लागू करें और सेव करें</button>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeHistoryModal()">×</span>
+            <h2 data-lang-key="historyTitle">हिस्ट्री</h2>
+            <ul id="historyList"></ul>
+            <p><small data-lang-key="historyNote">नोट: यह केवल पिछले कुछ बदलावों को दिखाता है। किसी आइटम पर क्लिक करके उसे लोड करें।</small></p>
+        </div>
+    </div>
+
+    <div id="projectManagementModal" class="modal">
+        <div class="project-modal-content">
+            <span class="close-button" onclick="closeProjectManagementModal()">×</span>
+            <h2 data-lang-key="projectManagementTitle">प्रोजेक्ट मैनेजमेंट</h2>
+            <div class="projects-group">
+                <h3 data-lang-key="saveCurrentProjectTitle">वर्तमान प्रोजेक्ट सेव करें</h3>
+                <label for="projectNameInput" data-lang-key="projectNameLabel">प्रोजेक्ट का नाम:</label>
+                <input type="text" id="projectNameInput" data-lang-placeholder="projectNamePlaceholder">
+                <button onclick="saveCurrentProject()" data-lang-key="saveProjectBtn">प्रोजेक्ट सेव करें</button>
+            </div>
+            <div class="projects-group">
+                <h3 data-lang-key="savedProjectsTitle">सेव किए गए प्रोजेक्ट्स</h3>
+                <ul id="projectList"></ul>
+                <p id="noProjectsMessage" style="display:none;" data-lang-key="noProjectsSaved">कोई प्रोजेक्ट सेव नहीं किया गया है।</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="offcutsLibraryModal" class="modal">
+        <div class="offcuts-library-modal-content">
+            <span class="close-button" onclick="closeOffcutsLibraryModal()">×</span>
+            <h2 data-lang-key="offcutsLibraryTitle">ऑफकट लाइब्रेरी</h2>
+            <div class="offcut-add-manual-group" style="padding: 10px; border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 15px;">
+                <h4 data-lang-key="addManualOffcutTitle" style="margin-top:0; margin-bottom:10px;">मैन्युअल ऑफकट जोड़ें</h4>
+                <div style="display:flex; gap:10px; align-items: flex-end;">
+                    <div style="flex-grow:1;">
+                        <label for="manualOffcutWidth"><span data-lang-key="offcutWidthLabel">चौड़ाई</span> (<span class="unit-display">cm</span>):</label>
+                        <input type="number" id="manualOffcutWidth" placeholder="0" step="any" style="margin-bottom:5px;">
+                    </div>
+                    <div style="flex-grow:1;">
+                        <label for="manualOffcutLength"><span data-lang-key="offcutLengthLabel">लंबाई</span> (<span class="unit-display">cm</span>):</label>
+                        <input type="number" id="manualOffcutLength" placeholder="0" step="any" style="margin-bottom:5px;">
+                    </div>
+                    <div style="flex-grow:1;">
+                        <label for="manualOffcutSourceName" data-lang-key="offcutSourceNameLabel">स्रोत (वैकल्पिक):</label>
+                        <input type="text" id="manualOffcutSourceName" data-lang-placeholder="offcutSourcePlaceholder" style="margin-bottom:5px;">
+                    </div>
+                    <button onclick="addManualOffcut()" data-lang-key="addManualOffcutBtn" style="padding: 10px 15px; height: 40px; margin-bottom:5px;">जोड़ें</button>
+                </div>
+            </div>
+            <hr style="margin: 15px 0;">
+            <div id="offcutsListContainer">
+            </div>
+            <div id="offcutsLibraryTotalSummary"></div>
+            <p id="noOffcutsMessageModal" style="display:none;"></p>
+        </div>
+    </div>
+
     <script type="module" src="js/main.js"></script>
-
 </body>
 </html>
